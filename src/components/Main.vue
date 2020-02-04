@@ -3,8 +3,12 @@
     <v-row>
       <v-col>
         <v-card class="text-center">
-          <v-date-picker v-model="fecha" full-width>
-
+          <v-date-picker
+            v-model="fecha"
+            full-width
+            locale="es"
+            :min="minimo"
+            :max="maximo">
           </v-date-picker>
         </v-card>
         <v-card color="error" dark>
@@ -20,7 +24,9 @@ export default {
   name: 'Main',
   data() {
       return {
-          fecha: ''
+          fecha: '',
+          minimo: '1984',
+          maximo: new Date().toISOString().substr(0, 10)
       }
   }
 }
