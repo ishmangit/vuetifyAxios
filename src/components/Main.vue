@@ -6,13 +6,14 @@
           <v-date-picker
             v-model="fecha"
             full-width
+            color="secondary"
             locale="es"
             :min="minimo"
             :max="maximo"
             @change="getDolar(fecha)">
           </v-date-picker>
         </v-card>
-        <v-card color="error" dark>
+        <v-card color="info" dark>
           <v-card-text class="display-1 text-center">{{ valor }}</v-card-text>
         </v-card>
       </v-col>
@@ -22,6 +23,7 @@
 
 <script>
 import axios from 'axios'
+import { mapMutations } from 'vuex'
 
 export default {
   name: 'Main',
@@ -34,11 +36,13 @@ export default {
       }
   },
   methods: {
+      ...mapMutations(['mostrarLoading', 'ocultarLoading']),
       async getDolar(dia) {
           let arrayFecha = dia.split(['-']);
           let ddmmyy =`${arrayFecha[2]}-${arrayFecha[1]}-${arrayFecha[0]}`;
 
           try {
+            this.mostrarLoading({ titulo: 'Buscando información...', color: 'secondary'});
             let datos = await axios.get(`https://mindicador.cl/api/dolar/${ddmmyy}`);
             console.log(datos.data.serie);
             if (datos.data.serie.length > 0) {
@@ -49,7 +53,7 @@ export default {
           } catch (error) {
               console.log('Error axios');
           } finally {
-
+            this.ocultarLoading();
           }
       }
   },
