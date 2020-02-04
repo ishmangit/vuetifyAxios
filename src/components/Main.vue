@@ -8,11 +8,12 @@
             full-width
             locale="es"
             :min="minimo"
-            :max="maximo">
+            :max="maximo"
+            @change="getDolar(fecha)">
           </v-date-picker>
         </v-card>
         <v-card color="error" dark>
-          <v-card-text class="display-1 text-center">{{ valor }} - {{ fecha }}</v-card-text>
+          <v-card-text class="display-1 text-center">{{ valor }}</v-card-text>
         </v-card>
       </v-col>
     </v-row>
@@ -26,7 +27,7 @@ export default {
   name: 'Main',
   data() {
       return {
-          fecha: '',
+          fecha: new Date().toISOString().substr(0, 10),
           minimo: '1984',
           maximo: new Date().toISOString().substr(0, 10),
           valor: null
@@ -34,13 +35,26 @@ export default {
   },
   methods: {
       async getDolar(dia) {
-          let datos = await axios.get(`https://mindicador.cl/api/dolar/${dia}`);
-          console.log(datos.data.serie[0].valor);
-          this.valor = datos.data.serie[0].valor;
+          let arrayFecha = dia.split(['-']);
+          let ddmmyy =`${arrayFecha[2]}-${arrayFecha[1]}-${arrayFecha[0]}`;
+
+          try {
+            let datos = await axios.get(`https://mindicador.cl/api/dolar/${ddmmyy}`);
+            console.log(datos.data.serie);
+            if (datos.data.serie.length > 0) {
+                this.valor = datos.data.serie[0].valor;
+            } else {
+                this.valor = 'Sin resultados';
+            }
+          } catch (error) {
+              console.log('Error axios');
+          } finally {
+
+          }
       }
   },
   created() {
-      this.getDolar('01-02-2019');
+      this.getDolar(this.fecha);
   }
 }
 </script>
